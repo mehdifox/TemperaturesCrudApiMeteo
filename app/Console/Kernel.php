@@ -31,8 +31,8 @@ class Kernel extends ConsoleKernel
            $this->getData();
            //Display log
            info("schedule ===> run");
-           })->everyFifteenMinutes();
-        // })->everyMinute();
+        })->everyMinute();
+        // })->everyFifteenMinutes();
         
 
     }

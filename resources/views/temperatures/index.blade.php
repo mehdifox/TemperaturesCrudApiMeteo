@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="">
+    <div id="myPlot" class="m-auto" style="width:100%;max-width:1000px;height:700px !important"></div>
+</div>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -66,4 +69,62 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('script')
+
+<script>
+    $(document).ready(function() {
+        //CAll APi
+        $.ajax({
+        url: "https://api.open-meteo.com/v1/forecast?latitude=28.50&longitude=-10.00&hourly=temperature_2m",
+        type: 'GET',
+        data: {
+            stuff: "here"
+        },
+        success: function (data) {
+            // recover times
+            var time = data.hourly.time;
+            // recover temperatures
+            var temperature = data.hourly.temperature_2m;
+            // horizontal values variable
+            var data_y = [];
+            // vertical value variable
+            var data_x = [];
+
+            // retrieve only the temperature values of the current day
+            time.forEach( function(value, key) {
+            dateTime1 = moment(value).format("YYYY-MM-DD"); 
+            dateTime2 = moment(new Date()).format("YYYY-MM-DD");
+            if(dateTime1 == dateTime2){
+                data_y.push(temperature[key]);
+                data_x.push(value.substr(11, 2)+'H');
+            }
+            });
+
+            // add value to myPlot
+            var trace = {
+            x: data_x,
+            y : data_y,
+            mode: 'lines+markers',
+            connectgaps: true
+            };
+
+            var data = [trace];
+
+            var layout = {
+            title: 'Météo du jour',
+            showlegend: false
+            };
+            //create newPlot
+            Plotly.newPlot('myPlot', data, layout);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            // Empty most of the time...
+        }
+    });
+
+    });
+ 
+   </script>
 @endsection
